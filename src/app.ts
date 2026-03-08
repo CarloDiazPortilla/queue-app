@@ -1,14 +1,28 @@
-import { EnvironmentAdapter } from "./config/environment.adapter.js";
-import { ServerRouter } from "./presentation/routes.js";
-import { Server } from "./presentation/server.js";
+import { EnvironmentAdapter } from "./config/environment.adapter";
+import { ServerRouter } from "./presentation/routes";
+import { Server } from "./presentation/server";
+import { createServer } from "http";
+import { WssService } from "./presentation/services/wss.service";
 
 (async () => {
   await main();
 })()
 
 async function main() {
-  new Server({
+  const server = new Server({
     port: EnvironmentAdapter.envs.PORT,
     routes: ServerRouter.routes,
-  }).start();
+  });
+
+  const httpServer = createServer(server.app);
+
+  WssService.initWebsocketServer({
+    server: httpServer
+  });
+
+  const PORT = EnvironmentAdapter.envs.PORT;
+
+  httpServer.listen(PORT, () => {
+    console.log(`server running on port ${PORT}`)
+  });
 }
