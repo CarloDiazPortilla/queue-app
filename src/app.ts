@@ -11,7 +11,6 @@ import { WssService } from "./presentation/services/wss.service";
 async function main() {
   const server = new Server({
     port: EnvironmentAdapter.envs.PORT,
-    routes: ServerRouter.routes,
   });
 
   const httpServer = createServer(server.app);
@@ -19,6 +18,8 @@ async function main() {
   WssService.initWebsocketServer({
     server: httpServer
   });
+
+  server.setRoutes(ServerRouter.routes)
 
   const PORT = EnvironmentAdapter.envs.PORT;
 
