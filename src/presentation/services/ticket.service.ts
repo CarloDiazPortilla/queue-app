@@ -1,5 +1,6 @@
 import { UuidAdapter } from "../../config/uuid.adapter";
 import type { Ticket } from "../../domain/interfaces/ticket";
+import { WssService } from "./wss.service";
 
 export class TicketService {
 
@@ -44,7 +45,9 @@ export class TicketService {
 
   private readonly workingOnTickets: Ticket[] = []
 
-  constructor() { }
+  constructor(
+    private readonly wssService = WssService.instance,
+  ) { }
 
   public get pendingTickets(): Ticket[] {
     return this.tickets.filter(filter => !filter.handleAtDesk);
@@ -68,7 +71,7 @@ export class TicketService {
 
     this.tickets.push(ticket);
 
-    // TODO: notify WebSocket
+    this.onTicketNumberChanged();
 
     return ticket;
   }
@@ -102,5 +105,9 @@ export class TicketService {
       ticket: ticket,
       status: "ok"
     }
+  }
+
+  private onTicketNumberChanged() {
+    this.wssService.sendMessage("on-ticked-count-changed", this.pendingTickets.length)
   }
 }
