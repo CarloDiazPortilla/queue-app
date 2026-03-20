@@ -85,7 +85,7 @@ export class TicketService {
 
     this.workingOnTickets.unshift({ ...ticket });
 
-    // TODO: notify websocket ticket has been handle by desk
+    this.onTicketNumberChanged();
 
     return {
       status: "ok",
