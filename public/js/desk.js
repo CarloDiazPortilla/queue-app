@@ -24,6 +24,7 @@ async function loadInitialCount() {
 }
 
 async function getTicket() {
+  await finishTicket();
   const response = await fetch(`http://localhost:3000/api/ticket/draw/${deskName}`);
   const { status, ticket, message } = await response.json();
 
@@ -34,6 +35,20 @@ async function getTicket() {
   }
   currentWorkingTicket = ticket;
   currentWorkingTicketElem.textContent = ticket.number;
+}
+
+async function finishTicket() {
+  if (!currentWorkingTicket) return;
+
+  const response = await fetch(`http://localhost:3000/api/ticket/done/${currentWorkingTicket.id}`, {
+    method: "PUT"
+  });
+  const { status } = await response.json();
+
+  if (status === "error") return;
+
+  currentWorkingTicket = null;
+  currentWorkingTicketElem.textContent = "Nadie";
 }
 
 function checkTicketCount(currentCount = 0) {
@@ -71,7 +86,8 @@ function connectToWebSockets() {
 
 }
 
-serveTicketBtn.addEventListener("click", getTicket)
+serveTicketBtn.addEventListener("click", getTicket);
+finishTicketBtn.addEventListener("click", finishTicket);
 
 loadInitialCount();
 connectToWebSockets();
