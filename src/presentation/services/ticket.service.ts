@@ -4,7 +4,7 @@ import { WssService } from "./wss.service";
 
 export class TicketService {
 
-  readonly tickets: Ticket[] = [
+  public tickets: Ticket[] = [
     {
       id: UuidAdapter.v4(),
       number: 1,
@@ -54,7 +54,7 @@ export class TicketService {
   }
 
   public get lastWorkingOnTickets(): Ticket[] {
-    return this.workingOnTickets.splice(0, 3);
+    return this.workingOnTickets.slice(0, 4);
   }
 
   public get lastTicketNumber(): number {
